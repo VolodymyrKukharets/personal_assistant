@@ -260,6 +260,8 @@ while True:
         print("3. Змінити email")
         print("4. Змінити дату народження")
         print("5. Назад")
+        print("6. Test123")
+
 
     elif choice == '3':
         query = input("Введіть запит для пошуку: ")
