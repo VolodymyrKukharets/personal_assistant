@@ -56,8 +56,6 @@ class Phone(Field):
             print(f"Некорректний номер {phone_num}. Спробуйте ще раз. ")
             return False
 
-
-
 class Email(Field):
     def __init__(self, value):
         if self.validate_email(value):
