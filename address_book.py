@@ -253,7 +253,11 @@ while True:
         address_book.add_record(Record(name, phone, email, birthday))
 
     if choice == '2':
-        pass
+        print("1. Змінити імя")
+        print("2. Змінити номер телефону")
+        print("3. Змінити email")
+        print("4. Змінити дату народження")
+        print("5. Назад")
 
     elif choice == '3':
         query = input("Введіть запит для пошуку: ")
