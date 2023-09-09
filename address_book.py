@@ -56,8 +56,6 @@ class Phone(Field):
             print(f"Некорректний номер {phone_num}. Спробуйте ще раз. ")
             return False
 
-
-
 class Email(Field):
     def __init__(self, value):
         if self.validate_email(value):
@@ -261,7 +259,6 @@ while True:
         print("4. Змінити дату народження")
         print("5. Назад")
         print("6. Test123")
-
 
     elif choice == '3':
         query = input("Введіть запит для пошуку: ")
