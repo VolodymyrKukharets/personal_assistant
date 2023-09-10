@@ -1,4 +1,3 @@
-from os import mkdir
 import shutil
 from os import *
 import sys
