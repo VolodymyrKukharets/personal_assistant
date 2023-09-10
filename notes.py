@@ -2,6 +2,7 @@ class Note:
     def __init__(self, content):
         self.content = content
 
+
 class NoteBook:
     def __init__(self):
         self.notes = []
