@@ -621,9 +621,10 @@ while True:
         results = address_book.search_contacts(query)
         if results:
             for contact in results:
+                address = ', '.join(contact.address)
                 phones = ', '.join(contact.phones)
                 emails = ', '.join(contact.emails)
-                print(f"Ім'я: {contact.name}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
+                print(f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
                 input('Введіть будь що для виходу')
                 os.system('cls')
                 break
@@ -642,9 +643,8 @@ while True:
             emails = ', '.join(contact.emails)
             print(
                 f"Ім'я: {contact.name}, Адреса: {address} Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
-            input('Введіть будь що для виходу')
-            os.system('cls')
-            break
+        input('Введіть будь що для виходу')
+        os.system('cls')
 
     elif choice == '5':
         os.system('cls')
