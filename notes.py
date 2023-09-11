@@ -74,7 +74,7 @@ class NoteBook:
     def view(self):
         """
         The function read notes.txt
-        Return(list) - list with all notes
+        return(list) - list with all notes
         """
         notes = list()
         with open('notes.txt', 'r', encoding='utf-8') as fl:
@@ -94,11 +94,25 @@ class NoteBook:
                 fl.write(f'{el}\n')
         return 'Notes sorted'
 
+    def search(self, keyword : str):
+        """
+        The function search notes for keyword
+        keyword(str) - parametr(word which is on note)
+        return(list) - list notes with keyword
+        """
+        notes = NoteBook().view()
+        ret_notes = list()
+
+        for el in notes:
+            if keyword in el:
+                ret_notes.append(el)
+        return ret_notes
+
 def main():
     notebook = NoteBook()
 
     while True:
-        command = input("Enter a command (add/edit/delete/view/sort/exit): ").strip().lower()
+        command = input("Enter a command (add/edit/delete/view/sort/search/exit): ").strip().lower()
 
         if command == "add":
             content = input("Enter the content of the note: ")
@@ -117,17 +131,30 @@ def main():
             print("Note deleted.")
 
         elif command == "view":
-            x = 1
-            for el in notebook.view():
-                print(f'{x}.{el}')
-                x += 1
+            try:
+                x = 1
+                for el in notebook.view():
+                    print(f'{x}.{el}')
+                    x += 1
+            except:
+                print("No notes available.")
 
         elif command == "sort":
-            reverse_t_f = input("Reverse(y/n):").lower()
+            reverse_t_f = input("Reverse(y/n): ").lower()
             if reverse_t_f == 'y':
                 print(notebook.sort(reverse=True))
             elif reverse_t_f == 'n':
                 print(notebook.sort())
+
+        elif command == "search":
+            keyword = input("Input keyword: ")
+            try:
+                x = 1
+                for el in notebook.search(keyword):
+                    print(f'{x}.{el}')
+                    x += 1
+            except:
+                print("No notes available.")
 
         elif command == "exit":
             print("Goodbye!")
