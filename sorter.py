@@ -126,3 +126,18 @@ class Sorter:
             else:
                 ret_name += el
         return ret_name
+
+def main():
+    while True:
+        try:
+            print('If you want exit: exit')
+            inp_fold = input("Enter folder that sort: ")
+            if inp_fold.lower() == 'exit':
+                break
+            out_fold = input("Enter output folder: ")
+            Sorter(inp_fold).sort_files(inp_fold, out_fold)
+            print(f"Files was sorted here:{out_folder}")
+        except:
+            print('Error')
+        
+main()
