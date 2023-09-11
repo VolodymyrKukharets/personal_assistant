@@ -106,19 +106,6 @@ class Record:
         if email != "":
             self.emails.append(email)
 
-    # def add_phone(self, number):
-    #     phone = Phone(number).value
-    #     self.phones.append(phone)
-    #
-    # def remove_phone(self, number):
-    #     if number in self.phones:
-    #         self.phones.remove(number)
-    #
-    # def edit_phone(self, old_number, new_number):
-    #     if old_number in self.phones:
-    #         self.phones.remove(old_number)
-    #         self.phones.append(new_number)
-
     def days_to_birthday(self):
         if not self.birthday:
             return None
@@ -141,22 +128,22 @@ class AddressBook(UserDict):
         self.data[record.name] = record
 
     def search_by_name(self, name):
-        results = [record for record in self.data.values() if record.name == name]
+        results = [record for record in self.data.values() if name in record.name]
         return results
 
     def search_by_address(self, address):
-        results = [record for record in self.data.values() if record.address == address]
+        results = [record for record in self.data.values() if address in record.address]
         return results
     def search_by_phone(self, number):
-        results = [record for record in self.data.values() for phone in record.phones if phone == number]
+        results = [record for record in self.data.values() for phone in record.phones if number in phone]
         return results
 
     def search_by_email(self, user_email):
-        results = [record for record in self.data.values() for email in record.emails if email == user_email]
+        results = [record for record in self.data.values() for email in record.emails if user_email in email]
         return results
 
     def search_by_birthday(self, birthday):
-        results = [record for record in self.data.values() if record.birthday == birthday]
+        results = [record for record in self.data.values() if birthday in record.birthday]
         return results
 
     def search_contacts(self, query):
@@ -637,8 +624,10 @@ while True:
                 phones = ', '.join(contact.phones)
                 emails = ', '.join(contact.emails)
                 print(f"Ім'я: {contact.name}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
-                time.sleep(2)
+                input('Введіть будь що для виходу')
                 os.system('cls')
+                break
+
         else:
             print("Контакти не знайдені")
             time.sleep(2)
@@ -653,9 +642,9 @@ while True:
             emails = ', '.join(contact.emails)
             print(
                 f"Ім'я: {contact.name}, Адреса: {address} Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
-
-
-
+            input('Введіть будь що для виходу')
+            os.system('cls')
+            break
 
     elif choice == '5':
         os.system('cls')
@@ -664,17 +653,22 @@ while True:
         for contact in address_book.data.values():
             days_to_birthday = contact.days_to_birthday()
             if days_to_birthday is not None and 0 <= days_to_birthday <= int(birthday_choice):
-                closest_birthday_contacts.append((contact.name, days_to_birthday))
+                closest_birthday_contacts.append(contact)
         if closest_birthday_contacts:
-            closest_birthday_contacts.sort(key=lambda x: x[1])
+            closest_birthday_contacts.sort(key=lambda x: x.days_to_birthday())
             print("Найближчі дні народження:")
-            for contact_name, days_to_birthday in closest_birthday_contacts:
-                if days_to_birthday >= 0:
-                    print(f"{contact_name} через {days_to_birthday} днів")
+            for contact in closest_birthday_contacts:
+                address = ', '.join(contact.address)
+                phones = ', '.join(contact.phones)
+                emails = ', '.join(contact.emails)
+                print(
+                    f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
+
         else:
             print("Немає контактів з найближчими днями народження.")
             time.sleep(2)
             os.system('cls')
+
 
     elif choice == '6':
         os.system('cls')
@@ -687,10 +681,15 @@ while True:
     elif choice == '7':
         os.system('cls')
         filename = input("Введіть назву файлу для завантаження: ")
-        address_book.load_from_file(filename)
-        print("Дані завантажено")
-        time.sleep(2)
-        os.system('cls')
+        try:
+            address_book.load_from_file(filename)
+            print("Дані завантажено")
+            time.sleep(2)
+            os.system('cls')
+        except:
+            print("Файл не знайдено")
+            time.sleep(2)
+            os.system('cls')
 
     elif choice == '8':
         break
