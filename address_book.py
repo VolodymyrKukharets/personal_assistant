@@ -124,6 +124,11 @@ class Record:
 
 
 class AddressBook(UserDict):
+    def __init__(self):
+        super().__init__()
+        self.data = {}
+        self.page_size = 3
+        self.page_number = 0
     def add_record(self, record):
         self.data[record.name] = record
 
@@ -134,32 +139,13 @@ class AddressBook(UserDict):
                 return False
         return True
 
-    def search_by_name(self, name):
-        results = [record for record in self.data.values() if name in record.name]
-        return results
-
-    def search_by_address(self, address):
-        results = [record for record in self.data.values() if address in record.address]
-        return results
-    def search_by_phone(self, number):
-        results = [record for record in self.data.values() for phone in record.phones if number in phone]
-        return results
-
-    def search_by_email(self, user_email):
-        results = [record for record in self.data.values() for email in record.emails if user_email in email]
-        return results
-
-    def search_by_birthday(self, birthday):
-        results = [record for record in self.data.values() if birthday in record.birthday]
-        return results
-
     def search_contacts(self, query):
-        results = []
-        results.extend(self.search_by_name(query))
-        results.extend(self.search_by_address(query))
-        results.extend(self.search_by_phone(query))
-        results.extend(self.search_by_email(query))
-        results.extend(self.search_by_birthday(query))
+        results = set()
+        results.update([record for record in self.data.values() if query in record.name])
+        results.update([record for record in self.data.values() if query in record.address])
+        results.update([record for record in self.data.values() for phone in record.phones if query in phone])
+        results.update([record for record in self.data.values() for email in record.emails if query in email])
+        results.update([record for record in self.data.values() if query in record.birthday])
         return results
 
     def save_to_file(self, filename):
@@ -169,6 +155,22 @@ class AddressBook(UserDict):
     def load_from_file(self, filename):
         with open(filename, 'rb') as file:
             self.data = pickle.load(file)
+
+    def __iter__(self):
+        self.page_number = 0
+        return self
+
+    def __next__(self):
+        items = list(self.data.values())
+        items.sort(key=lambda contact: contact.name.lower())
+        start_index = self.page_number * self.page_size
+        end_index = start_index + self.page_size
+        if start_index >= len(items):
+            raise StopIteration()
+        current_page_contacts = items[start_index:end_index]
+        has_next_page = end_index < len(items)
+        has_previous_page = self.page_number > 0
+        return current_page_contacts, has_next_page, has_previous_page
 
 
 address_book = AddressBook()
@@ -633,26 +635,71 @@ while True:
                 phones = ', '.join(contact.phones)
                 emails = ', '.join(contact.emails)
                 print(f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
-                input('Введіть будь що для виходу')
-                os.system('cls')
-                break
-
+            input('Введіть будь що для виходу')
+            os.system('cls')
         else:
             print("Контакти не знайдені")
             time.sleep(2)
             os.system('cls')
 
-
     elif choice == '4':
         os.system('cls')
-        for contact in address_book.data.values():
-            address = ', '.join(contact.address)
-            phones = ', '.join(contact.phones)
-            emails = ', '.join(contact.emails)
-            print(
-                f"Ім'я: {contact.name}, Адреса: {address} Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
-        input('Введіть будь що для виходу')
-        os.system('cls')
+        while True:
+            contacts, has_next_page, has_previous_page = next(address_book)
+            if contacts:
+                for contact in contacts:
+                    if contact:
+                        address = ', '.join(contact.address) if contact.address else "Немає адреси"
+                        phones = ', '.join(contact.phones) if contact.phones else "Немає телефону"
+                        emails = ', '.join(contact.emails) if contact.emails else "Немає email"
+                        birthday = contact.birthday if contact.birthday else "Немає дати народження"
+                        print(
+                            f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {birthday}")
+
+                if has_next_page:
+                    print(f"1. Наступна сторінка")
+
+                if has_previous_page:
+                    print(f"2. Попередня сторінка")
+
+                print(f"3. Вихід")
+                choice = input("Оберіть опцію: ")
+
+                if choice.isdigit():
+                    choice = int(choice)
+
+                    if choice == 1 and has_next_page:
+                        # Наступна сторінка
+                        address_book.page_number += 1
+                        os.system('cls')
+
+                    elif choice == 2 and has_previous_page:
+                        # Попередня сторінка
+                        address_book.page_number -= 1
+                        os.system('cls')
+
+                    elif choice == 3:
+                        # Вихід
+                        os.system('cls')
+                        break
+
+                    else:
+                        print("Некоректний ввід. Введіть опцію.")
+                        time.sleep(2)
+                        os.system('cls')
+
+                else:
+                    print("Некоректний ввід. Введіть опцію.")
+                    time.sleep(2)
+                    os.system('cls')
+
+            else:
+                print("Немає контактів.")
+                input('Введіть будь що для виходу')
+                os.system('cls')
+                break
+
+
 
     elif choice == '5':
         os.system('cls')
