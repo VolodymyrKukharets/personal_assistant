@@ -5,13 +5,7 @@ from datetime import date, datetime
 import re
 import os
 
-
-class Field:
-    def __init__(self, value):
-        self.value = value
-
-
-class Name(Field):
+class Name():
     def __init__(self, value):
         if self.validate_name(value):
             super().__init__(value)
@@ -24,13 +18,13 @@ class Name(Field):
             print("Ім'я не може бути пустим. Будь ласка, введіть ім'я.")
             return False
 
-class Address(Field):
+class Address():
     def __init__(self, value):
         if self.validate_address(value):
             super().__init__(value)
 
 
-class Phone(Field):
+class Phone():
     def __init__(self, value):
         if self.validate_phone_number(value):
             super().__init__(value)
@@ -50,7 +44,7 @@ class Phone(Field):
             return False
 
 
-class Email(Field):
+class Email():
     def __init__(self, value):
         if self.validate_email(value):
             super().__init__(value)
@@ -66,7 +60,7 @@ class Email(Field):
             return False
 
 
-class Birthday(Field):
+class Birthday():
     def __init__(self, value):
         if self.validate_data(value):
             super().__init__(value)
