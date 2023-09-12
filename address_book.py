@@ -192,12 +192,13 @@ def main():
             print("Додавання контакту:")
             print("Введіть 'вийти', щоб вийти з режиму додавання контакту.")
             name = Name.validate_name(input("Введіть ім'я: "))
-            is_unique = address_book.is_name_unique(name)
             if name == 'вийти':
                 print('Операція додавання контактів зупинена')
                 time.sleep(2)
                 os.system('cls')
                 continue
+
+            is_unique = address_book.is_name_unique(name)
             while name is False and is_unique:
                 name = Name.validate_name(input("Введіть ім'я: "))
                 is_unique = address_book.is_name_unique(name)
@@ -751,10 +752,8 @@ def main():
                 os.system('cls')
 
         elif choice == '8':
+            os.system('cls')
             break
 
         else:
             print("Некоректний вибір, спробуйте ще раз.")
-
-
-main()
