@@ -127,6 +127,13 @@ class AddressBook(UserDict):
     def add_record(self, record):
         self.data[record.name] = record
 
+    def is_name_unique(self, name):
+        for contact in self.data.values():
+            if contact.name == name:
+                print('Таке імя уже існує, введіть унікальне імя')
+                return False
+        return True
+
     def search_by_name(self, name):
         results = [record for record in self.data.values() if name in record.name]
         return results
@@ -183,12 +190,13 @@ while True:
         print("Додавання контакту:")
         print("Введіть 'вийти', щоб вийти з режиму додавання контакту.")
         name = Name.validate_name(input("Введіть ім'я: "))
+        is_unique = address_book.is_name_unique(name)
         if name == 'вийти':
             print('Операція додавання контактів зупинена')
             time.sleep(2)
             os.system('cls')
             continue
-        while name is False:
+        while name is False and is_unique is False:
             name = Name.validate_name(input("Введіть ім'я: "))
             if name == 'вийти':
                 print('Операція додавання контактів зупинена')
@@ -231,12 +239,12 @@ while True:
                 os.system('cls')
                 break
 
-        birthday = Birthday.validate_data(input("Введіть дату народження: "))
+        birthday = Birthday.validate_data(input("Введіть дату народження в форматі dd/mm/yyyy: "))
         if birthday == 'вийти':
             print('Операція додавання контактів зупинена')
             continue
         while birthday is False:
-            birthday = Birthday.validate_data(input("Введіть дату народження: "))
+            birthday = Birthday.validate_data(input("Введіть дату народження в форматі dd/mm/yyyy: "))
             if birthday == 'вийти':
                 print('Операція додавання контактів зупинена')
                 time.sleep(2)
@@ -583,7 +591,7 @@ while True:
 
                         elif change_choice == '5':
                             os.system('cls')
-                            new_birthday = Birthday.validate_data(input("Введіть нову дату народження: "))
+                            new_birthday = Birthday.validate_data(input("Введіть нову дату народження в форматі dd/mm/yyyy: "))
                             if new_birthday == 'вийти':
                                 print('Зміна дати народження скасована')
                                 time.sleep(2)
