@@ -648,10 +648,10 @@ def main():
                 if contacts:
                     for contact in contacts:
                         if contact:
-                            address = ', '.join(contact.address) if contact.address else "Немає адреси"
-                            phones = ', '.join(contact.phones) if contact.phones else "Немає телефону"
-                            emails = ', '.join(contact.emails) if contact.emails else "Немає email"
-                            birthday = contact.birthday if contact.birthday else "Немає дати народження"
+                            address = ', '.join(contact.address) if contact.address else ""
+                            phones = ', '.join(contact.phones) if contact.phones else ""
+                            emails = ', '.join(contact.emails) if contact.emails else ""
+                            birthday = contact.birthday if contact.birthday else ""
                             print(
                                 f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {birthday}")
 
@@ -664,29 +664,18 @@ def main():
                     print(f"3. Вихід")
                     choice = input("Оберіть опцію: ")
 
-                    if choice.isdigit():
-                        choice = int(choice)
-
-                        if choice == 1 and has_next_page:
-                            # Наступна сторінка
-                            address_book.page_number += 1
-                            os.system('cls')
-
-                        elif choice == 2 and has_previous_page:
-                            # Попередня сторінка
-                            address_book.page_number -= 1
-                            os.system('cls')
-
-                        elif choice == 3:
-                            # Вихід
-                            os.system('cls')
-                            break
-
-                        else:
-                            print("Некоректний ввід. Введіть опцію.")
-                            time.sleep(2)
-                            os.system('cls')
-
+                    if choice == "1" and has_next_page:
+                        # Наступна сторінка
+                        address_book.page_number += 1
+                        os.system('cls')
+                    elif choice == "2" and has_previous_page:
+                        # Попередня сторінка
+                        address_book.page_number -= 1
+                        os.system('cls')
+                    elif choice == "3":
+                        # Вихід
+                        os.system('cls')
+                        break
                     else:
                         print("Некоректний ввід. Введіть опцію.")
                         time.sleep(2)
