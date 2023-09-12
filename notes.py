@@ -112,25 +112,25 @@ def main():
     notebook = NoteBook()
 
     while True:
-        command = input("Enter a command (add/edit/delete/view/sort/search/exit): ").strip().lower()
+        command = input("1.Add new note\n2.Edit some note\n3.Delete some note\n4.View all notes\n5.Sort all notes\n6.Search some note\n7.Exit\nEnter a command: ").strip().lower()
 
-        if command == "add":
+        if command == "1":
             content = input("Enter the content of the note: ")
             notebook.save(content)
             print("Note added.")
 
-        elif command == "edit":
+        elif command == "2":
             index = int(input("Enter the index of the note to edit: "))
             new_content = input("Enter the new content: ")
             notebook.edit(index, new_content)
             print("Note edited.")
 
-        elif command == "delete":
+        elif command == "3":
             index = int(input("Enter the index of the note to delete: "))
             notebook.delete(index)
             print("Note deleted.")
 
-        elif command == "view":
+        elif command == "4":
             try:
                 x = 1
                 for el in notebook.view():
@@ -139,14 +139,14 @@ def main():
             except:
                 print("No notes available.")
 
-        elif command == "sort":
+        elif command == "5":
             reverse_t_f = input("Reverse(y/n): ").lower()
             if reverse_t_f == 'y':
                 print(notebook.sort(reverse=True))
             elif reverse_t_f == 'n':
                 print(notebook.sort())
 
-        elif command == "search":
+        elif command == "6":
             keyword = input("Input keyword: ")
             try:
                 x = 1
@@ -156,7 +156,7 @@ def main():
             except:
                 print("No notes available.")
 
-        elif command == "exit":
+        elif command == "7":
             print("Goodbye!")
             break
 
