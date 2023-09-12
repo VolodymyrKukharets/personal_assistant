@@ -56,10 +56,10 @@ class Email(Field):
             super().__init__(value)
 
     @staticmethod
-    def validate_email(email=None):
+    def validate_email(email=''):
         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
-        if re.match(pattern, email) or email is None or email == 'вийти':
+        if re.match(pattern, email) or email == '' or email == 'вийти':
             return email
         else:
             print(f"Некоректний email {email}. Спробуйте ще раз.")
@@ -73,7 +73,7 @@ class Birthday(Field):
 
     @staticmethod
     def validate_data(birthday):
-        if birthday == 'вийти':
+        if birthday == 'вийти' or birthday == '':
             return birthday
 
         data_list = birthday.split("/")
@@ -198,8 +198,9 @@ while True:
             time.sleep(2)
             os.system('cls')
             continue
-        while name is False and is_unique is False:
+        while name is False and is_unique:
             name = Name.validate_name(input("Введіть ім'я: "))
+            is_unique = address_book.is_name_unique(name)
             if name == 'вийти':
                 print('Операція додавання контактів зупинена')
                 time.sleep(2)
@@ -408,12 +409,15 @@ while True:
                         if change_choice == '1':
                             os.system('cls')
                             new_name = Name.validate_name(input("Введіть нове ім'я: "))
-
-                            if new_name == 'вийти':
-                                print('Зміна імені скасована')
-                                time.sleep(2)
-                                os.system('cls')
-                                break
+                            is_unique = address_book.is_name_unique(new_name)
+                            while new_name is False and is_unique:
+                                new_name = Name.validate_name(input("Введіть нове ім'я: "))
+                                is_unique = address_book.is_name_unique(new_name)
+                                if new_name == 'вийти':
+                                    print('Операція зміни контактів зупинена')
+                                    time.sleep(2)
+                                    os.system('cls')
+                                    break
 
                             else:
                                 del address_book.data[record.name]
