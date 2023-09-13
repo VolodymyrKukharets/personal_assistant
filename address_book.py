@@ -177,8 +177,6 @@ class AddressBook(UserDict):
         items.sort(key=lambda contact: contact.name.lower())
         start_index = self.page_number * self.page_size
         end_index = start_index + self.page_size
-        if start_index >= len(items):
-            raise StopIteration()
         current_page_contacts = items[start_index:end_index]
         has_next_page = end_index < len(items)
         has_previous_page = self.page_number > 0
@@ -190,7 +188,7 @@ def main():
 
     while True:
         print("1. Додати контакт")
-        print("2. Зміна та видалення контактних данних")
+        print("2. Редагування та видалення контактних данних")
         print("3. Пошук контакту")
         print("4. Вивід всіх контактів")
         print("5. Найближчі дні народження")
@@ -205,68 +203,54 @@ def main():
             print("Додавання контакту:")
             print("Введіть 'вийти', щоб вийти з режиму додавання контакту.")
             name = Name.validate_name(input("Введіть ім'я: "))
-            if name == 'вийти':
+            is_unique = address_book.is_name_unique(name)
+            while name is False or is_unique is False:
+                name = Name.validate_name(input("Введіть ім'я: "))
+                is_unique = address_book.is_name_unique(name)
+            if name.strip().lower() == 'вийти':
                 print('Операція додавання контактів зупинена')
                 time.sleep(2)
                 os.system('cls')
                 continue
 
-            is_unique = address_book.is_name_unique(name)
-            while name is False and is_unique:
-                name = Name.validate_name(input("Введіть ім'я: "))
-                is_unique = address_book.is_name_unique(name)
-                if name == 'вийти':
-                    print('Операція додавання контактів зупинена')
-                    time.sleep(2)
-                    os.system('cls')
-                    break
-
             address = input("Введіть адресу: ")
-            if name == 'вийти':
+            if address.strip().lower() == 'вийти':
                 print('Операція додавання контактів зупинена')
                 time.sleep(2)
                 os.system('cls')
                 continue
 
             phone = Phone.validate_phone_number(input("Введіть номер телефону: "))
-            if phone == 'вийти':
-                print('Операція додавання контактів зупинена')
-                time.sleep(2)
-                os.system('cls')
-                continue
             while phone is False:
                 phone = Phone.validate_phone_number(input("Введіть номер телефону: "))
-                if phone == 'вийти':
-                    print('Операція додавання контактів зупинена')
-                    time.sleep(2)
-                    os.system('cls')
-                    break
 
-            email = Email.validate_email(input("Введіть email: "))
-            if email == 'вийти':
+            if phone.strip().lower() == 'вийти':
                 print('Операція додавання контактів зупинена')
                 time.sleep(2)
                 os.system('cls')
                 continue
+
+
+            email = Email.validate_email(input("Введіть email: "))
             while email is False:
                 email = Email.validate_email(input("Введіть email: "))
-                if email == 'вийти':
-                    print('Операція додавання контактів зупинена')
-                    time.sleep(2)
-                    os.system('cls')
-                    break
+
+            if email.strip().lower() == 'вийти':
+                print('Операція додавання контактів зупинена')
+                time.sleep(2)
+                os.system('cls')
+                continue
 
             birthday = Birthday.validate_data(input("Введіть дату народження в форматі dd/mm/yyyy: "))
-            if birthday == 'вийти':
-                print('Операція додавання контактів зупинена')
-                continue
+
             while birthday is False:
                 birthday = Birthday.validate_data(input("Введіть дату народження в форматі dd/mm/yyyy: "))
-                if birthday == 'вийти':
-                    print('Операція додавання контактів зупинена')
-                    time.sleep(2)
-                    os.system('cls')
-                    break
+
+            if birthday == 'вийти':
+                print('Операція додавання контактів зупинена')
+                time.sleep(2)
+                os.system('cls')
+                continue
 
             address_book.add_record(Record(name, address, phone, email, birthday))
             print('Запис створено')
@@ -277,7 +261,7 @@ def main():
             os.system('cls')
             while True:
                 print("1. Видалити контактні дані або контакт")
-                print("2. Змінити дані контакту")
+                print("2. Редагувати дані контакту")
                 print("3. Вихід")
                 sub_choice = input("Виберіть опцію: ")
 
@@ -313,84 +297,85 @@ def main():
 
                         if delete_param_choice == '1':
                             name_to_edit = input("Введіть імя контакту, з якого потрібно видалити адресу: ")
-                            for name, record in address_book.data.items():
-                                if name == name_to_edit:
-                                    print("Список адрес користувача:")
-                                    for i, address in enumerate(record.address, start=1):
-                                        print(address)
-                                    address_to_delete = input("Введіть адресу для видалення: ")
-                                    if address_to_delete in record.address:
-                                        record.address.remove(address_to_delete)
-                                        print(f"Адреса {address_to_delete} видалена з контакту {name_to_edit}.")
-                                        time.sleep(2)
-                                        os.system('cls')
-                                        break
-                                    else:
-                                        print(f"Адреси '{address_to_delete}' не знайдено.")
-                                        time.sleep(2)
-                                        os.system('cls')
-                                else:
-                                    print(f"Контакт з іменем '{name_to_edit}' не знайдений.")
+                            if name_to_edit in address_book.data:
+                                record = address_book.data[name_to_edit]
+                                print("Список адрес користувача:")
+                                for i, address in enumerate(record.address, start=1):
+                                    print(address)
+                                address_to_delete = input("Введіть адресу для видалення: ")
+                                if address_to_delete in record.address:
+                                    record.address.remove(address_to_delete)
+                                    print(f"Адреса {address_to_delete} видалена з контакту {name_to_edit}.")
                                     time.sleep(2)
                                     os.system('cls')
+                                else:
+                                    print(f"Адреси '{address_to_delete}' не знайдено.")
+                                    time.sleep(2)
+                                    os.system('cls')
+                            else:
+                                print(f"Контакт з іменем '{name_to_edit}' не знайдений.")
+                                time.sleep(2)
+                                os.system('cls')
 
                         if delete_param_choice == '2':
-                            name_to_edit = input("Введіть імя контакту, з якого потрібно видалити адресу: ")
-                            for name, record in address_book.data.items():
-                                if name == name_to_edit:
-                                    print("Список телефонів користувача:")
-                                    for i, phone in enumerate(record.phones, start=1):
-                                        print(phone)
-                                    phone_to_delete = input("Введіть номер телефону для видалення: ")
-                                    if phone_to_delete in record.phones:
-                                        record.phones.remove(phone_to_delete)
-                                        print(f"Телефон {phone_to_delete} видалений з контакту {name_to_edit}.")
-                                        time.sleep(2)
-                                        os.system('cls')
-                                        break
-                                    else:
-                                        print(f"Телефон '{phone_to_delete}' не знайдено.")
-                                        time.sleep(2)
-                                        os.system('cls')
-                                else:
-                                    print(f"Контакт з іменем '{name_to_edit}' не знайдений.")
-                                    time.sleep(2)
-                                    os.system('cls')
-
-
-                        elif delete_param_choice == '3':
-                            name_to_edit = input("Введіть імя контакту, з якого потрібно видалити адресу: ")
-                            for name, record in address_book.data.items():
-                                if name == name_to_edit:
-                                    print("Список емейлів користувача:")
-                                    for i, email in enumerate(record.emails, start=1):
-                                        print(email)
-                                    email_to_delete = input("Введіть email для видалення: ")
-                                    if email_to_delete in record.emails:
-                                        record.emails.remove(email_to_delete)
-                                        print(f"Email {email_to_delete} видалений з контакту {name_to_edit}.")
-                                        time.sleep(2)
-                                        os.system('cls')
-                                        break
-                                    else:
-                                        print(f"Email '{email_to_delete}' не знайдено.")
-                                        time.sleep(2)
-                                        os.system('cls')
-                                else:
-                                    print(f"Контакт з іменем '{name_to_edit}' не знайдений.")
-                                    time.sleep(2)
-                                    os.system('cls')
-
-
-                        elif delete_param_choice == '4':
-                            name_to_edit = input("Введіть ім'я контакту, з якого потрібно видалити день народження: ")
-                            for name, record in address_book.data.items():
-                                if name == name_to_edit:
-                                    record.birthday = ""
-                                    print(f"День народження видалено з контакту {name_to_edit}.")
+                            name_to_edit = input("Введіть імя контакту, з якого потрібно видалити номер: ")
+                            if name_to_edit in address_book.data:
+                                record = address_book.data[name_to_edit]
+                                print("Список адрес користувача:")
+                                for i, phone in enumerate(record.phones, start=1):
+                                    print(phone)
+                                phone_to_delete = input("Введіть номер телефону для видалення: ")
+                                if phone_to_delete in record.phones:
+                                    record.phones.remove(phone_to_delete)
+                                    print(f"Телефон {phone_to_delete} видалений з контакту {name_to_edit}.")
                                     time.sleep(2)
                                     os.system('cls')
                                     break
+                                else:
+                                    print(f"Телефон '{phone_to_delete}' не знайдено.")
+                                    time.sleep(2)
+                                    os.system('cls')
+                            else:
+                                print(f"Контакт з іменем '{name_to_edit}' не знайдений.")
+                                time.sleep(2)
+                                os.system('cls')
+
+
+                        elif delete_param_choice == '3':
+                            name_to_edit = input("Введіть імя контакту, з якого потрібно видалити email: ")
+                            if name_to_edit in address_book.data:
+                                record = address_book.data[name_to_edit]
+                                print("Список адрес користувача:")
+                                for i, email in enumerate(record.emails, start=1):
+                                    print(email)
+                                email_to_delete = input("Введіть email для видалення: ")
+                                if email_to_delete in record.emails:
+                                    record.emails.remove(email_to_delete)
+                                    print(f"Email {email_to_delete} видалений з контакту {name_to_edit}.")
+                                    time.sleep(2)
+                                    os.system('cls')
+                                    break
+                                else:
+                                    print(f"Email '{email_to_delete}' не знайдено.")
+                                    time.sleep(2)
+                                    os.system('cls')
+                            else:
+                                print(f"Контакт з іменем '{name_to_edit}' не знайдений.")
+                                time.sleep(2)
+                                os.system('cls')
+
+
+                        elif delete_param_choice == '4':
+                            name_to_edit = input("Введіть імя контакту, з якого потрібно видалити день народження: ")
+                            if name_to_edit in address_book.data:
+                                record = address_book.data[name_to_edit]
+                                print("Список адрес користувача:")
+
+                                record.birthday = ""
+                                print(f"День народження видалено з контакту {name_to_edit}.")
+                                time.sleep(2)
+                                os.system('cls')
+                                break
                             else:
                                 print(f"Контакт з іменем '{name_to_edit}' не знайдений.")
                                 time.sleep(2)
@@ -412,11 +397,11 @@ def main():
                         record = address_book.data[contact_name]
 
                         while True:
-                            print("1. Змінити ім'я")
-                            print("2. Змінити адресу")
-                            print("3. Змінити номер телефону")
-                            print("4. Змінити email")
-                            print("5. Змінити дату народження")
+                            print("1. Редагувати ім'я")
+                            print("2. Редагувати адресу")
+                            print("3. Редагувати номер телефону")
+                            print("4. Редагувати email")
+                            print("5. Редагувати дату народження")
                             print("6. Вихід")
                             change_choice = input("Виберіть опцію: ")
 
@@ -424,11 +409,11 @@ def main():
                                 os.system('cls')
                                 new_name = Name.validate_name(input("Введіть нове ім'я: "))
                                 is_unique = address_book.is_name_unique(new_name)
-                                while new_name is False and is_unique:
+                                while new_name is False or is_unique is False:
                                     new_name = Name.validate_name(input("Введіть нове ім'я: "))
                                     is_unique = address_book.is_name_unique(new_name)
                                     if new_name == 'вийти':
-                                        print('Операція зміни контактів зупинена')
+                                        print('Операція редагування контактів зупинена')
                                         time.sleep(2)
                                         os.system('cls')
                                         break
@@ -444,7 +429,7 @@ def main():
 
                             elif change_choice == '2':
                                 os.system('cls')
-                                print("Виберіть адресу, яку хочете змінити:")
+                                print("Виберіть адресу, яку хочете редагувати:")
                                 for i, address in enumerate(record.address, start=1):
                                     print(f"{i}. {address}")
                                 print(f"{len(record.address) + 1}. Додати нову адресу")
@@ -483,7 +468,7 @@ def main():
                                     new_address = input(f"Введіть нову адресу для '{old_address}': ")
 
                                     if new_address == 'вийти':
-                                        print('Зміна адреси скасована')
+                                        print('Редагування адреси скасована')
                                         time.sleep(2)
                                         os.system('cls')
                                         break
@@ -508,7 +493,7 @@ def main():
 
                             elif change_choice == '3':
                                 os.system('cls')
-                                print("Виберіть номер телефону, який хочете змінити:")
+                                print("Виберіть номер телефону, який хочете редагувати:")
                                 for i, phone in enumerate(record.phones, start=1):
                                     print(f"{i}. {phone}")
                                 print(f"{len(record.phones) + 1}. Додати новий номер телефону")
@@ -520,11 +505,6 @@ def main():
                                     new_phone = Phone.validate_phone_number(input("Введіть новий номер телефону: "))
                                     while new_phone is False:
                                         new_phone = Phone.validate_phone_number(input("Введіть новий номер телефону: "))
-                                        if new_phone == 'вийти':
-                                            print('Операція додавання контактів зупинена')
-                                            time.sleep(2)
-                                            os.system('cls')
-                                            break
 
                                     if new_phone == 'вийти':
                                         print('Додавання номеру телефону скасовано')
@@ -553,7 +533,7 @@ def main():
                                             input(f"Введіть новий номер телефону для '{old_phone}': "))
 
                                     if new_phone == 'вийти':
-                                        print('Зміна номеру телефону скасована')
+                                        print('Редагування номера телефону скасована')
                                         time.sleep(2)
                                         os.system('cls')
                                         break
@@ -613,7 +593,7 @@ def main():
                                             input(f"Введіть новий email для '{old_email}': "))
 
                                     if new_email == 'вийти':
-                                        print('Зміна email скасована')
+                                        print('Редагування email скасована')
                                         time.sleep(2)
                                         os.system('cls')
                                         break
@@ -640,7 +620,7 @@ def main():
                                 new_birthday = Birthday.validate_data(
                                     input("Введіть нову дату народження в форматі dd/mm/yyyy: "))
                                 if new_birthday == 'вийти':
-                                    print('Зміна дати народження скасована')
+                                    print('Редагування дати народження скасовано')
                                     time.sleep(2)
                                     os.system('cls')
                                     break
@@ -680,12 +660,13 @@ def main():
             query = input("Введіть запит для пошуку: ")
             results = address_book.search_contacts(query)
             if results:
+                print(f"|{'Ім`я':^20}|{'Адреса':^50}|{'Телефон':^50}|{'Email':^51}|{'Birthday':^21}|")
                 for contact in results:
                     address = ', '.join(contact.address)
                     phones = ', '.join(contact.phones)
                     emails = ', '.join(contact.emails)
                     print(
-                        f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
+                        f"|{contact.name:^20}|{address:^50}|{phones:^50}| {emails:^50}| {birthday:^20}|")
                 input('Введіть будь що для виходу')
                 os.system('cls')
             else:
@@ -698,6 +679,7 @@ def main():
             while True:
                 contacts, has_next_page, has_previous_page = next(address_book)
                 if contacts:
+                    print(f"|{'Ім`я':^20}|{'Адреса':^50}|{'Телефон':^50}|{'Email':^51}|{'Birthday':^21}|")
                     for contact in contacts:
                         if contact:
                             address = ', '.join(contact.address) if contact.address else ""
@@ -705,7 +687,7 @@ def main():
                             emails = ', '.join(contact.emails) if contact.emails else ""
                             birthday = contact.birthday if contact.birthday else ""
                             print(
-                                f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {birthday}")
+                                f"|{contact.name:^20}|{address:^50}|{phones:^50}| {emails:^50}| {birthday:^20}|")
 
                     if has_next_page:
                         print(f"1. Наступна сторінка")
@@ -752,12 +734,15 @@ def main():
             if closest_birthday_contacts:
                 closest_birthday_contacts.sort(key=lambda x: x.days_to_birthday())
                 print("Найближчі дні народження:")
+                print(f"|{'Ім`я':^20}|{'Адреса':^50}|{'Телефон':^50}|{'Email':^51}|{'Birthday':^21}|")
                 for contact in closest_birthday_contacts:
                     address = ', '.join(contact.address)
                     phones = ', '.join(contact.phones)
                     emails = ', '.join(contact.emails)
                     print(
-                        f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
+                        f"|{contact.name:^20}|{address:^50}|{phones:^50}| {emails:^50}| {birthday:^20}|")
+                input("Натисніть Ентер для виходу")
+                os.system('cls')
 
             else:
                 print("Немає контактів з найближчими днями народження.")
