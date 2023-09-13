@@ -144,11 +144,15 @@ class AddressBook(UserDict):
         return results
 
     def save_to_file(self, filename):
-        with open(filename, 'wb') as file:
+        # Перевіряємо, чи існує каталог 'address_book_save'
+        if not os.path.exists('address_book_save'):
+            os.makedirs('address_book_save')  # Якщо не існує, створюємо його
+
+        with open(f'address_book_save/{filename}', 'wb') as file:
             pickle.dump(self.data, file)
 
     def load_from_file(self, filename):
-        with open(filename, 'rb') as file:
+        with open(f'address_book_save/{filename}', 'rb') as file:
             self.data = pickle.load(file)
 
     def __iter__(self):
