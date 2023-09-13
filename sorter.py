@@ -130,13 +130,17 @@ class Sorter:
 def main():
     while True:
         try:
-            print('If you want exit: exit')
-            inp_fold = input("Enter folder that sort: ")
-            if inp_fold.lower() == 'exit':
+            print('1.Сортувати\n2.Вихід')
+            command = input("Введіть команду: ")
+            if command == '1':
+                inp_folder = input('Введіть папку для сортування')
+                out_fold = input("Введіть вихідну папку: ")
+                Sorter(inp_fold).sort_files(inp_fold, out_fold)
+                print(f"Файли були відсортовані тут: {out_folder}")
+                system('cls')
+            elif command == '2':
+                system('cls')
                 break
-            out_fold = input("Enter output folder: ")
-            Sorter(inp_fold).sort_files(inp_fold, out_fold)
-            print(f"Files was sorted here:{out_folder}")
         except:
             print('Error')
         
