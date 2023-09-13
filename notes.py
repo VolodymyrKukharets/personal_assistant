@@ -14,10 +14,10 @@ class NoteBook:
         """
         index = self.notes.index(note)
         print(f"Тег:\n{note.tag}")
-        new_tag = input(f"Введіть новий значення тегу: ")
+        new_tag = input(f"Введіть новий значення тегу: ") or note.tag
         os.system('cls')
         print(f"Ваша нотатка:\n{note.content}")
-        new_content = input(f"Введіть новий текст: ")
+        new_content = input(f"Введіть новий текст: ") or note.content
         os.system('cls')
         self.notes[index] = NoteTag(new_tag, new_content)
         print(f"Нотатка '{note.tag}' відредагована.")
@@ -34,7 +34,14 @@ class NoteBook:
         Зберегти нову нотатку в блокнот.
         """
         tag = input("Введіть тег для нотатки: ")
+        while tag == '':
+            print('Тег не може бути пустим')
+            tag = input("Введіть тег для нотатки: ")
+
         content = input("Введіть зміст для нотатки: ")
+        while content == '':
+            print('Зміст може бути пустим')
+            content = input("Введіть зміст для нотатки: ")
         new_note = NoteTag(tag, content)
         self.notes.append(new_note)
         print(f"Нотатка '{tag}' додана.")
@@ -67,7 +74,6 @@ class NoteBook:
         else:
             print("Не знайдено нотаток за вказаним ключовим словом.")
 
-
     def save_to_file(self, filename):
         # Перевіряємо, чи існує каталог 'address_book_save'
         if not os.path.exists('notes_save'):
@@ -80,10 +86,12 @@ class NoteBook:
         with open(f'notes_save/{filename}', 'rb') as file:
             self.notes = pickle.load(file)
 
+
 class NoteTag:
     def __init__(self, tag, content):
         self.tag = tag
         self.content = content
+
 
 def main():
     notebook = NoteBook()
@@ -110,13 +118,15 @@ def main():
             os.system('cls')
             notebook.view()
             if notebook.notes:
-                index = int(input("Введіть номер нотатки для редагування: ")) - 1
-                if 0 <= index < len(notebook.notes):
-                    notebook.edit(notebook.notes[index])
-                else:
+                try:
+                    index = int(input("Введіть номер нотатки для редагування: ")) - 1
+                    if 0 <= index < len(notebook.notes):
+                        notebook.edit(notebook.notes[index])
+                except:
                     print('Некорректне значення')
                     time.sleep(2)
                     os.system('cls')
+
 
         elif command == "3":
             os.system('cls')
@@ -138,7 +148,8 @@ def main():
 
         elif command == "5":
             os.system('cls')
-            option = input("Всі нотатки будуть відсортовані в алфавітному порядку. Відсортувати? (так/ні): ").strip().lower()
+            option = input(
+                "Всі нотатки будуть відсортовані в алфавітному порядку. Відсортувати? (так/ні): ").strip().lower()
             option = True if option == "так" else False
             if option:
                 notebook.sort()
@@ -186,6 +197,7 @@ def main():
             print("Некоректна команда. Спробуйте ще раз.")
             time.sleep(2)
             os.system('cls')
+
 
 if __name__ == "__main__":
     main()
