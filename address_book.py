@@ -196,7 +196,7 @@ def main():
         print("7. Завантажити дані")
         print("8. Вийти")
 
-        choice = input("Виберіть опцію: ")
+        choice = input("Виберіть ваше значення: ")
 
         if choice == '1':
             os.system('cls')
@@ -660,13 +660,13 @@ def main():
             query = input("Введіть запит для пошуку: ")
             results = address_book.search_contacts(query)
             if results:
-                print(f"|{'Ім`я':^20}|{'Адреса':^50}|{'Телефон':^50}|{'Email':^51}|{'Birthday':^21}|")
+                print(f"|{'Ім`я':^20}|{'Адреса':^30}|{'Телефон':^30}|{'Email':^31}|{'День народження':^21}|")
                 for contact in results:
                     address = ', '.join(contact.address)
                     phones = ', '.join(contact.phones)
                     emails = ', '.join(contact.emails)
                     print(
-                        f"|{contact.name:^20}|{address:^50}|{phones:^50}| {emails:^50}| {birthday:^20}|")
+                        f"|{contact.name:^20}|{address:^30}|{phones:^30}| {emails:^30}| {birthday:^20}|")
                 input('Введіть будь що для виходу')
                 os.system('cls')
             else:
@@ -679,7 +679,7 @@ def main():
             while True:
                 contacts, has_next_page, has_previous_page = next(address_book)
                 if contacts:
-                    print(f"|{'Ім`я':^20}|{'Адреса':^50}|{'Телефон':^50}|{'Email':^51}|{'Birthday':^21}|")
+                    print(f"|{'Ім`я':^20}|{'Адреса':^30}|{'Телефон':^30}|{'Email':^31}|{'День народження':^21}|")
                     for contact in contacts:
                         if contact:
                             address = ', '.join(contact.address) if contact.address else ""
@@ -687,7 +687,7 @@ def main():
                             emails = ', '.join(contact.emails) if contact.emails else ""
                             birthday = contact.birthday if contact.birthday else ""
                             print(
-                                f"|{contact.name:^20}|{address:^50}|{phones:^50}| {emails:^50}| {birthday:^20}|")
+                                f"|{contact.name:^20}|{address:^30}|{phones:^30}| {emails:^30}| {birthday:^20}|")
 
                     if has_next_page:
                         print(f"1. Наступна сторінка")
@@ -734,13 +734,13 @@ def main():
             if closest_birthday_contacts:
                 closest_birthday_contacts.sort(key=lambda x: x.days_to_birthday())
                 print("Найближчі дні народження:")
-                print(f"|{'Ім`я':^20}|{'Адреса':^50}|{'Телефон':^50}|{'Email':^51}|{'Birthday':^21}|")
+                print(f"|{'Ім`я':^20}|{'Адреса':^30}|{'Телефон':^30}|{'Email':^31}|{'День народження':^21}|")
                 for contact in closest_birthday_contacts:
                     address = ', '.join(contact.address)
                     phones = ', '.join(contact.phones)
                     emails = ', '.join(contact.emails)
                     print(
-                        f"|{contact.name:^20}|{address:^50}|{phones:^50}| {emails:^50}| {birthday:^20}|")
+                        f"|{contact.name:^20}|{address:^30}|{phones:^30}| {emails:^30}| {birthday:^20}|")
                 input("Натисніть Ентер для виходу")
                 os.system('cls')
 
