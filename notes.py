@@ -1,166 +1,186 @@
+import time
+import os
+import pickle
+
+
 class NoteBook:
-    """
-    Class NoteBook responsible for management in the notebook
-    """
-    def edit(self, index : int, new_content : str):
-        """
-        The function editing one element in notes
-        index(int) - number element which will be changed
-        new_content(str) - new content which will be added
-        Example:
-            notes.txt:
-                test1
-                test2
-                test3
-            If we want edit the second element:
-            NoteBook().edit(2, 'new text')
-        """
-        if 1 <= index < len(NoteBook().view()):
-            notes = NoteBook().view()
-            notes[index-1] = new_content
-            with open('notes.txt', 'w', encoding='utf-8') as fl:
-                for el in notes:
-                    fl.write(f'{el}\n')
-            return 'Notes edited'
-        else:
-            print("Invalid note index.")
+    def __init__(self):
+        super().__init__()
+        self.notes = []
 
-    def delete(self, index : int):
+    def edit(self, note):
         """
-        The function delete one element from notes
-        index(int) - number element which will be deleted
-        Example:
-            notes.txt:
-                test1
-                test2
-                test3
-            If we want delete the second element:
-            NoteBook().delete(2)
+        Редагувати нотатку в блокноті.
         """
-        if 1 <= index < len(NoteBook().view()):
-            notes = NoteBook().view()
-            del notes[index-1]
-            with open('notes.txt', 'w', encoding='utf-8') as fl:
-                for el in notes:
-                    fl.write(f'{el}\n')
-            return 'Note deleted'
-        else:
-            print("Invalid note index.")
+        index = self.notes.index(note)
+        new_content = input(f"Введіть новий зміст для '{note.tag}': ")
+        self.notes[index] = NoteTag(note.tag, new_content)
+        print(f"Нотатка '{note.tag}' відредагована.")
 
-    def save(self, content : str):
+    def delete(self, note):
         """
-        The function save new element to notes
-        content(str) - new content which will be added
-        Example:
-            notes.txt:
-                test1
-                test2
-                test3
-            If we want add new element:
-            NoteBook().save('test4')
-            notes.txt:
-                test1
-                test2
-                test3
-                test4
+        Видалити нотатку з блокнота.
         """
-        try:
-            with open('notes.txt', 'a', encoding='utf-8') as fl:
-                fl.write(f'{content}\n')
-        except:
-            with open('notes.txt', 'w', encoding='utf-8') as fl:
-                fl.write(f'{content}\n')
+        self.notes.remove(note)
+        print(f"Нотатка '{note.tag}' видалена.")
+
+    def save(self):
+        """
+        Зберегти нову нотатку в блокнот.
+        """
+        tag = input("Введіть тег для нотатки: ")
+        content = input("Введіть зміст для нотатки: ")
+        new_note = NoteTag(tag, content)
+        self.notes.append(new_note)
+        print(f"Нотатка '{tag}' додана.")
 
     def view(self):
         """
-        The function read notes.txt
-        return(list) - list with all notes
+        Переглянути всі нотатки в блокноті.
         """
-        notes = list()
-        with open('notes.txt', 'r', encoding='utf-8') as fl:
-            for el in fl.readlines():
-                notes.append(el.replace('\n', ''))
-        return notes
+        if not self.notes:
+            print("Немає доступних нотаток.")
+        else:
+            for index, note in enumerate(self.notes, start=1):
+                print(f"{index}. Тег: {note.tag}, Зміст: {note.content}")
 
-    def sort(self, reverse : bool=False):
+    def sort(self):
         """
-        The function sort all notes
-        reverse(bool) - if we want the reverse, the default is False
+        Сортувати всі нотатки в блокноті.
         """
-        notes = NoteBook().view()
+        self.notes.sort(key=lambda note: note.tag)
+        print("Нотатки відсортовані.")
 
-        with open('notes.txt', 'w', encoding='utf-8') as fl:
-            for el in sorted(notes, reverse=reverse):
-                fl.write(f'{el}\n')
-        return 'Notes sorted'
-
-    def search(self, keyword : str):
+    def search(self, keyword):
         """
-        The function search notes for keyword
-        keyword(str) - parametr(word which is on note)
-        return(list) - list notes with keyword
+        Пошук нотаток за конкретним ключовим словом в блокноті.
         """
-        notes = NoteBook().view()
-        ret_notes = list()
+        matching_notes = [note for note in self.notes if keyword in note.tag or keyword in note.content]
+        if matching_notes:
+            for index, note in enumerate(matching_notes, start=1):
+                print(f"{index}. Тег: {note.tag}, Зміст: {note.content}")
+        else:
+            print("Не знайдено нотаток за вказаним ключовим словом.")
 
-        for el in notes:
-            if keyword in el:
-                ret_notes.append(el)
-        return ret_notes
+
+    def save_to_file(self, filename):
+        # Перевіряємо, чи існує каталог 'address_book_save'
+        if not os.path.exists('notes_save'):
+            os.makedirs('notes_save')  # Якщо не існує, створюємо його
+
+        with open(f'notes_save/{filename}', 'wb') as file:
+            pickle.dump(self.notes, file)
+
+    def load_from_file(self, filename):
+        with open(f'notes_save/{filename}', 'rb') as file:
+            self.notes = pickle.load(file)
+
+class NoteTag:
+    def __init__(self, tag, content):
+        self.tag = tag
+        self.content = content
 
 def main():
     notebook = NoteBook()
 
     while True:
-        command = input("1.Add new note\n2.Edit some note\n3.Delete some note\n4.View all notes\n5.Sort all notes\n6.Search some note\n7.Exit\nEnter a command: ").strip().lower()
+        print("1. Додати нову нотатку")
+        print("2. Редагувати нотатку")
+        print("3. Видалити нотатку")
+        print("4. Переглянути всі нотатки")
+        print("5. Сортувати всі нотатки")
+        print("6. Пошук нотатки")
+        print("7. Зберегти нотатки в файл")
+        print("8. Завантажити нотатки з файлу")
+        print("9. Вихід")
+        command = input("Введіть команду: ")
 
         if command == "1":
-            content = input("Enter the content of the note: ")
-            notebook.save(content)
-            print("Note added.")
+            os.system('cls')
+            notebook.save()
+            time.sleep(2)
+            os.system('cls')
 
         elif command == "2":
-            index = int(input("Enter the index of the note to edit: "))
-            new_content = input("Enter the new content: ")
-            notebook.edit(index, new_content)
-            print("Note edited.")
+            os.system('cls')
+            notebook.view()
+            if notebook.notes:
+                index = int(input("Введіть номер нотатки для редагування: ")) - 1
+                if 0 <= index < len(notebook.notes):
+                    notebook.edit(notebook.notes[index])
+                else:
+                    print('Некорректне значення')
+                    time.sleep(2)
+                    os.system('cls')
 
         elif command == "3":
-            index = int(input("Enter the index of the note to delete: "))
-            notebook.delete(index)
-            print("Note deleted.")
+            os.system('cls')
+            notebook.view()
+            if notebook.notes:
+                index = int(input("Введіть номер нотатки для видалення: ")) - 1
+                if 0 <= index < len(notebook.notes):
+                    notebook.delete(notebook.notes[index])
+                else:
+                    print('Некорректне значення')
+                    time.sleep(2)
+                    os.system('cls')
 
         elif command == "4":
-            try:
-                x = 1
-                for el in notebook.view():
-                    print(f'{x}.{el}')
-                    x += 1
-            except:
-                print("No notes available.")
+            os.system('cls')
+            notebook.view()
+            input('Для повернення натисніть Ентер')
+            os.system('cls')
 
         elif command == "5":
-            reverse_t_f = input("Reverse(y/n): ").lower()
-            if reverse_t_f == 'y':
-                print(notebook.sort(reverse=True))
-            elif reverse_t_f == 'n':
-                print(notebook.sort())
+            os.system('cls')
+            option = input("Сортувати нотатки? (так/ні): ").strip().lower()
+            option = True if option == "так" else False
+            if option:
+                notebook.sort()
+                time.sleep(2)
+                os.system('cls')
+            else:
+                print('Відміна')
+                time.sleep(2)
+                os.system('cls')
+
 
         elif command == "6":
-            keyword = input("Input keyword: ")
-            try:
-                x = 1
-                for el in notebook.search(keyword):
-                    print(f'{x}.{el}')
-                    x += 1
-            except:
-                print("No notes available.")
+            os.system('cls')
+            keyword = input("Введіть ключове слово для пошуку: ")
+            notebook.search(keyword)
+            input('Для повернення натисніть Ентер')
+            os.system('cls')
 
-        elif command == "7":
-            print("Goodbye!")
+        elif command == '7':
+            os.system('cls')
+            filename = input("Введіть назву файлу для збереження: ")
+            notebook.save_to_file(filename)
+            print("Дані збережено")
+            time.sleep(2)
+            os.system('cls')
+
+        elif command == '8':
+            os.system('cls')
+            filename = input("Введіть назву файлу для завантаження: ")
+            try:
+                notebook.load_from_file(filename)
+                print("Дані завантажено")
+                time.sleep(2)
+                os.system('cls')
+            except:
+                print("Файл не знайдено")
+                time.sleep(2)
+                os.system('cls')
+
+        elif command == "9":
+            os.system('cls')
             break
 
         else:
-            print("Invalid command. Please try again.")
+            print("Некоректна команда. Спробуйте ще раз.")
+            time.sleep(2)
+            os.system('cls')
 
-main()
+if __name__ == "__main__":
+    main()

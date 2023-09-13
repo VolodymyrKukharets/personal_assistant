@@ -7,10 +7,12 @@ import os
 
 class Name():
     def __init__(self, value):
+        # Конструктор для імені. Перевіряємо валідність імені.
         if self.validate_name(value):
             self.value = value
 
     @staticmethod
+    # Статичний метод для перевірки валідності імені.
     def validate_name(name):
         if len(name) >= 1:
             return name
@@ -25,6 +27,7 @@ class Address():
 
 class Phone():
     def __init__(self, value):
+        # Конструктор для номера телефону. Перевіряємо валідність номера.
         if self.validate_phone_number(value):
             self.value = value
 
@@ -33,6 +36,7 @@ class Phone():
         if phone_num == 'вийти':
             return phone_num
 
+        # Видаляємо всі нецифрові символи з номера.
         phone_num = re.sub(r'\D', '', phone_num)
         pattern = r"^(?:\+?380|0)\d{9}$"
 
@@ -45,13 +49,16 @@ class Phone():
 
 class Email():
     def __init__(self, value):
+        # Конструктор для email. Перевіряємо валідність email.
         if self.validate_email(value):
             self.value = value
 
     @staticmethod
     def validate_email(email=''):
+
         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
+        # Перевіряємо, чи відповідає email вказаному паттерну.
         if re.match(pattern, email) or email == '' or email == 'вийти':
             return email
         else:
@@ -61,6 +68,7 @@ class Email():
 
 class Birthday():
     def __init__(self, value):
+        # Конструктор для дати народження. Перевіряємо валідність дати.
         if self.validate_data(value):
             self.value = value
 
@@ -74,6 +82,7 @@ class Birthday():
             day, month, year = map(int, data_list)
             current_year = datetime.now().year
 
+            # Перевіряємо правильність дати і року.
             if 1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= current_year:
                 return birthday
             else:
@@ -775,3 +784,7 @@ def main():
 
         else:
             print("Некоректний вибір, спробуйте ще раз.")
+
+
+if __name__ == "__main__":
+    main()
