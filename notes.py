@@ -13,8 +13,13 @@ class NoteBook:
         Редагувати нотатку в блокноті.
         """
         index = self.notes.index(note)
-        new_content = input(f"Введіть новий зміст для '{note.tag}': ")
-        self.notes[index] = NoteTag(note.tag, new_content)
+        print(f"Тег:\n{note.tag}")
+        new_tag = input(f"Введіть новий значення тегу: ")
+        os.system('cls')
+        print(f"Ваша нотатка:\n{note.content}")
+        new_content = input(f"Введіть новий текст: ")
+        os.system('cls')
+        self.notes[index] = NoteTag(new_tag, new_content)
         print(f"Нотатка '{note.tag}' відредагована.")
 
     def delete(self, note):
@@ -133,7 +138,7 @@ def main():
 
         elif command == "5":
             os.system('cls')
-            option = input("Сортувати нотатки? (так/ні): ").strip().lower()
+            option = input("Всі нотатки будуть відсортовані в алфавітному порядку. Відсортувати? (так/ні): ").strip().lower()
             option = True if option == "так" else False
             if option:
                 notebook.sort()
