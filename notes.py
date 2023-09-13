@@ -53,14 +53,20 @@ class NoteBook:
         if not self.notes:
             print("Немає доступних нотаток.")
         else:
+            print(f"|{'№':^5}|{'Тег':^120}|")
             for index, note in enumerate(self.notes, start=1):
-                print(f"{index}. Тег: {note.tag}, Зміст: {note.content}")
+                parts = [note.content[i:i + 120] for i in range(0, len(note.content), 120)]
+                print(f"|{index:^5}|{note.tag:^120}|")
+                for part in parts:
+                    print(f"|{'':^5}|{part:^120}|")
+                print()
 
     def sort(self):
         """
         Сортувати всі нотатки в блокноті.
         """
         self.notes.sort(key=lambda note: note.tag)
+        self.view()
         print("Нотатки відсортовані.")
 
     def search(self, keyword):
@@ -69,9 +75,17 @@ class NoteBook:
         """
         matching_notes = [note for note in self.notes if keyword in note.tag or keyword in note.content]
         if matching_notes:
+            os.system('cls')
+            print(f"|{'№':^5}|{'Тег та нотатка':^120}|")
             for index, note in enumerate(matching_notes, start=1):
-                print(f"{index}. Тег: {note.tag}, Зміст: {note.content}")
+                parts = [note.content[i:i + 120] for i in range(0, len(note.content), 120)]
+                print(f"|{index:^5}|{note.tag:^120}|")
+                for part in parts:
+                    print(f"|{'':^5}|{part:^120}|")
+                print()
+
         else:
+            os.system('cls')
             print("Не знайдено нотаток за вказаним ключовим словом.")
 
     def save_to_file(self, filename):
@@ -106,7 +120,7 @@ def main():
         print("7. Зберегти нотатки в файл")
         print("8. Завантажити нотатки з файлу")
         print("9. Вихід")
-        command = input("Введіть команду: ")
+        command = input("Введіть ваше значення: ")
 
         if command == "1":
             os.system('cls')
@@ -150,13 +164,17 @@ def main():
             os.system('cls')
             option = input(
                 "Всі нотатки будуть відсортовані в алфавітному порядку. Відсортувати? (так/ні): ").strip().lower()
-            option = True if option == "так" else False
-            if option:
+
+            if option == "так":
                 notebook.sort()
                 time.sleep(2)
                 os.system('cls')
-            else:
+            elif option == "ні":
                 print('Відміна')
+                time.sleep(2)
+                os.system('cls')
+            else:
+                print('Некорректне значення, повернення до годовного меню')
                 time.sleep(2)
                 os.system('cls')
 
