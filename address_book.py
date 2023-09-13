@@ -5,6 +5,7 @@ from datetime import date, datetime
 import re
 import os
 
+
 class Name():
     def __init__(self, value):
         # Конструктор для імені. Перевіряємо валідність імені.
@@ -19,6 +20,7 @@ class Name():
         else:
             print("Ім'я не може бути пустим. Будь ласка, введіть ім'я.")
             return False
+
 
 class Address():
     def __init__(self, value):
@@ -131,6 +133,7 @@ class AddressBook(UserDict):
         self.data = {}
         self.page_size = 3
         self.page_number = 0
+
     def add_record(self, record):
         self.data[record.name] = record
 
@@ -143,10 +146,11 @@ class AddressBook(UserDict):
 
     def search_by_name(self, name):
         return [record for record in self.data.values() if name in record.name]
+
     def search_contacts(self, query):
         results = set()
         results.update([record for record in self.data.values() if query in record.name])
-        results.update([record for record in self.data.values() if query in record.address])
+        results.update([record for record in self.data.values() for address in record.address if query in address])
         results.update([record for record in self.data.values() for phone in record.phones if query in phone])
         results.update([record for record in self.data.values() for email in record.emails if query in email])
         results.update([record for record in self.data.values() if query in record.birthday])
@@ -179,6 +183,7 @@ class AddressBook(UserDict):
         has_next_page = end_index < len(items)
         has_previous_page = self.page_number > 0
         return current_page_contacts, has_next_page, has_previous_page
+
 
 def main():
     address_book = AddressBook()
@@ -616,7 +621,8 @@ def main():
                                     else:
                                         if new_email != '':
                                             record.emails[index_to_change] = new_email
-                                            print(f"Email '{old_email}' змінено на '{new_email}' для контакту '{record.name}'.")
+                                            print(
+                                                f"Email '{old_email}' змінено на '{new_email}' для контакту '{record.name}'.")
                                             time.sleep(2)
                                             os.system('cls')
                                         else:
@@ -631,7 +637,8 @@ def main():
 
                             elif change_choice == '5':
                                 os.system('cls')
-                                new_birthday = Birthday.validate_data(input("Введіть нову дату народження в форматі dd/mm/yyyy: "))
+                                new_birthday = Birthday.validate_data(
+                                    input("Введіть нову дату народження в форматі dd/mm/yyyy: "))
                                 if new_birthday == 'вийти':
                                     print('Зміна дати народження скасована')
                                     time.sleep(2)
@@ -677,7 +684,8 @@ def main():
                     address = ', '.join(contact.address)
                     phones = ', '.join(contact.phones)
                     emails = ', '.join(contact.emails)
-                    print(f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
+                    print(
+                        f"Ім'я: {contact.name}, Адреса: {address}, Телефон: {phones}, Email: {emails}, Birthday: {contact.birthday}")
                 input('Введіть будь що для виходу')
                 os.system('cls')
             else:
