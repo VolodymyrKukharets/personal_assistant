@@ -8,7 +8,7 @@ import os
 class Name():
     def __init__(self, value):
         if self.validate_name(value):
-            super().__init__(value)
+            self.value = value
 
     @staticmethod
     def validate_name(name):
@@ -20,14 +20,13 @@ class Name():
 
 class Address():
     def __init__(self, value):
-        if self.validate_address(value):
-            super().__init__(value)
+        self.value = value
 
 
 class Phone():
     def __init__(self, value):
         if self.validate_phone_number(value):
-            super().__init__(value)
+            self.value = value
 
     @staticmethod
     def validate_phone_number(phone_num):
@@ -47,7 +46,7 @@ class Phone():
 class Email():
     def __init__(self, value):
         if self.validate_email(value):
-            super().__init__(value)
+            self.value = value
 
     @staticmethod
     def validate_email(email=''):
@@ -63,7 +62,7 @@ class Email():
 class Birthday():
     def __init__(self, value):
         if self.validate_data(value):
-            super().__init__(value)
+            self.value = value
 
     @staticmethod
     def validate_data(birthday):
@@ -133,6 +132,8 @@ class AddressBook(UserDict):
                 return False
         return True
 
+    def search_by_name(self, name):
+        return [record for record in self.data.values() if name in record.name]
     def search_contacts(self, query):
         results = set()
         results.update([record for record in self.data.values() if query in record.name])
@@ -442,10 +443,15 @@ def main():
                                         break
 
                                     else:
-                                        record.address.append(new_address)
-                                        print(f"Адреса '{new_address}' додана до контакту '{record.name}'.")
-                                        time.sleep(2)
-                                        os.system('cls')
+                                        if new_address != '':
+                                            record.address.append(new_address)
+                                            print(f"Адреса '{new_address}' додана до контакту '{record.name}'.")
+                                            time.sleep(2)
+                                            os.system('cls')
+                                        else:
+                                            print('Ви ввели пусте значення адреси')
+                                            time.sleep(2)
+                                            os.system('cls')
 
 
                                 elif address_choice == str(len(record.phones) + 2):
@@ -456,22 +462,25 @@ def main():
                                     os.system('cls')
                                     index_to_change = int(address_choice) - 1
                                     old_address = record.address[index_to_change]
-                                    new_address = input(f"Введіть новий номер телефону для '{old_address}': ")
-                                    while new_address == False:
-                                        new_phone = input(f"Введіть новий номер телефону для '{old_address}': ")
+                                    new_address = input(f"Введіть нову адресу для '{old_address}': ")
 
                                     if new_address == 'вийти':
-                                        print('Зміна номеру телефону скасована')
+                                        print('Зміна адреси скасована')
                                         time.sleep(2)
                                         os.system('cls')
                                         break
 
                                     else:
-                                        record.phones[index_to_change] = new_address
-                                        print(
-                                            f"Номер телефону '{old_address}' змінено на '{new_address}' для контакту '{record.name}'.")
-                                        time.sleep(2)
-                                        os.system('cls')
+                                        if new_address != '':
+                                            record.address[index_to_change] = new_address
+                                            print(
+                                                f"Адреса '{old_address}' змінена на '{new_address}' для контакту '{record.name}'.")
+                                            time.sleep(2)
+                                            os.system('cls')
+                                        else:
+                                            print('Ви ввели пусте значення адреси, вона не буде змінена')
+                                            time.sleep(2)
+                                            os.system('cls')
 
                                 else:
                                     print("Некоректний вибір, спробуйте ще раз.")
@@ -491,12 +500,19 @@ def main():
                                 if phone_choice == str(len(record.phones) + 1):
                                     os.system('cls')
                                     new_phone = Phone.validate_phone_number(input("Введіть новий номер телефону: "))
+                                    while new_phone is False:
+                                        new_phone = Phone.validate_phone_number(input("Введіть новий номер телефону: "))
+                                        if new_phone == 'вийти':
+                                            print('Операція додавання контактів зупинена')
+                                            time.sleep(2)
+                                            os.system('cls')
+                                            break
+
                                     if new_phone == 'вийти':
                                         print('Додавання номеру телефону скасовано')
                                         time.sleep(2)
                                         os.system('cls')
                                         break
-
                                     else:
                                         record.phones.append(new_phone)
                                         print(f"Номер телефону '{new_phone}' додано до контакту '{record.name}'.")
@@ -554,10 +570,15 @@ def main():
                                         break
 
                                     else:
-                                        record.emails.append(new_email)
-                                        print(f"Email '{new_email}' додано до контакту '{record.name}'.")
-                                        time.sleep(2)
-                                        os.system('cls')
+                                        if new_email != '':
+                                            record.emails.append(new_email)
+                                            print(f"Email '{new_email}' додано до контакту '{record.name}'.")
+                                            time.sleep(2)
+                                            os.system('cls')
+                                        else:
+                                            print('Ви ввели пусте значення email')
+                                            time.sleep(2)
+                                            os.system('cls')
 
                                 elif email_choice == str(len(record.emails) + 2):
                                     os.system('cls')
@@ -580,10 +601,15 @@ def main():
                                         break
 
                                     else:
-                                        record.emails[index_to_change] = new_email
-                                        print(f"Email '{old_email}' змінено на '{new_email}' для контакту '{record.name}'.")
-                                        time.sleep(2)
-                                        os.system('cls')
+                                        if new_email != '':
+                                            record.emails[index_to_change] = new_email
+                                            print(f"Email '{old_email}' змінено на '{new_email}' для контакту '{record.name}'.")
+                                            time.sleep(2)
+                                            os.system('cls')
+                                        else:
+                                            print('Ви ввели пусте значення email, він не буде змінений')
+                                            time.sleep(2)
+                                            os.system('cls')
 
                                 else:
                                     print("Некоректний вибір, спробуйте ще раз.")
@@ -600,10 +626,15 @@ def main():
                                     break
 
                                 else:
-                                    record.birthday = new_birthday
-                                    print("Дата дня народження змінена")
-                                    time.sleep(2)
-                                    os.system('cls')
+                                    if new_birthday != '':
+                                        record.birthday = new_birthday
+                                        print("Дата дня народження змінена")
+                                        time.sleep(2)
+                                        os.system('cls')
+                                    else:
+                                        print('Ви ввели пусте значення дати дня народження, вона не буде змінена')
+                                        time.sleep(2)
+                                        os.system('cls')
 
                             elif change_choice == '6':
                                 os.system('cls')
