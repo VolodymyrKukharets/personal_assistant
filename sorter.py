@@ -1,147 +1,110 @@
+import platform
+import time
+from pathlib import Path
 import shutil
-from os import *
-import sys
+import os
 
-# |------------------------------------------------------------------|
-# |Sorter('input_folder').sort_files('input_folder', 'output_folder')|
-# |------------------------------------------------------------------|
+# Словник розширень для кожного типу файлів
+file_extensions = {
+    'images': ['JPEG', 'PNG', 'JPG', 'SVG'],
+    'documents': ['DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'],
+    'audio': ['MP3', 'OGG', 'WAV', 'AMR'],
+    'video': ['AVI', 'MP4', 'MOV', 'MKV'],
+    'archives': ['ZIP', 'GZ', 'TAR'],
+    'unknown': '',
+}
 
-class Sorter:
-    def __init__(self, basic_folder):
-        self.basic_folder = basic_folder
 
-    def sort_files(self, folder : str, outfolder : str)->None:
-        """
-        The function sorting all files in folder
-        folder(str) - from where the files will be sorted
-        outfolder(str) - folder where files will be sorted
-        """
-        self.create_folders(outfolder)
-        try:
-            if listdir(folder) == []:
-                rmdir(folder)
-                self.sort_files(self.basic_folder, outfolder)
-            else:
-                for el in listdir(folder):
-                    if path.isfile(f'{folder}/{el}') == True:
-                        file_name = el.split('.')[0]
-                        file_exp = el.split('.')[1]
-                        if file_exp in ['jpeg', 'png', 'jpg', 'svg']:
-                            self.copy_delete_file(folder, file_name, file_exp, 'images', outfolder)
-                            self.delele_folder(folder, outfolder)
-                        elif file_exp in ['avi', 'mp4', 'mov', 'mkv']:
-                            self.copy_delete_file(folder, file_name, file_exp, 'video', outfolder)
-                            self.delele_folder(folder, outfolder)
-                        elif file_exp in ['doc', 'docx', 'txt', 'pdf', 'xlsx', 'pptx']:
-                            self.copy_delete_file(folder, file_name, file_exp, 'documents', outfolder)
-                            self.delele_folder(folder, outfolder)
-                        elif file_exp in ['mp3', 'ogg', 'wav', 'amr']:
-                            self.copy_delete_file(folder, file_name, file_exp, 'audio', outfolder)
-                            self.delele_folder(folder, outfolder)
-                        elif file_exp in ['zip', 'gz', 'tar']:
-                            self.copy_delete_file(folder, file_name, file_exp, 'archives', outfolder)
-                            self.unpack_archv(f'archives/{self.normalize(file_name)}.{file_exp}', self.normalize(file_name), outfolder)
-                            remove(f'{outfolder}/archives/{file_name}.{file_exp}')
-                            self.delele_folder(folder, outfolder)
-                        else:
-                            self.copy_delete_file(folder, file_name, file_exp, 'other', outfolder)
-                            self.delele_folder(folder, outfolder)
-                    else:
-                        self.sort_files(f'{folder}/{el}', outfolder)
-        except FileNotFoundError:
-            pass
+def sort_files_recursive(source_path, destination_path):
+    # Отримуємо об'єкт каталогу джерела
+    source_directory = Path(source_path)
 
-    def unpack_archv(self, folder : str, path_to_unpack : str, outfolder : str)->None:
-        """
-        The function unpack archives
-        folder(str) - folder where is archive
-        path_to_unpack - folder where archive will be unpacked
-        outfolder(str) - folder where files will be sorted
-        """
-        mkdir(f"{outfolder}/archives/{path_to_unpack}")
-        try:
-            shutil.unpack_archive(folder, path_to_unpack)
-        except shutil.ReadError:
-            pass
+    # Ітеруємо всі файли та каталоги у вихідному каталозі
+    for item in source_directory.iterdir():
+        # Перевіряємо, чи ім'я елементу не знаходиться в списку розширень файлів або чи шлях не вказує на вихідний каталог
+        if item.name not in file_extensions.keys() or source_path != item.resolve():
+            if item.is_file():
+                # Отримуємо розширення файлу (наприклад, '.jpg', '.txt')
+                file_extension = item.suffix
 
-    def copy_delete_file(self, folder : str, file_name : str, file_exp : str, out_folder : str, outfolder : str)->None:
-        """
-        The function copy and delete files
-        folder(str) - folder where files
-        file_name(str) - name file which will be  copy on the new folder and delete in old folder
-        file_exp(str) - file extension
-        out_folder(str) - folder where will be file
-        outfolder(str) - folder where files will be sorted
-        """
-        shutil.copy(f'{folder}/{file_name}.{file_exp}', f'{outfolder}/{out_folder}/{self.normalize(file_name)}.{file_exp}')
-        remove(f'{folder}/{file_name}.{file_exp}')
+                for file_type, extensions in file_extensions.items():
+                    # Перевіряємо, чи розширення файлу входить до списку розширень для даного типу файлів
+                    if file_extension[1:].upper() in extensions:
+                        # Створюємо каталог призначення для даного типу файлу (якщо він ще не існує)
+                        destination_directory = Path(destination_path) / file_type
+                        destination_directory.mkdir(exist_ok=True)
 
-    def delele_folder(self, folder : str, outfolder : str)->None:
-        """
-        The function delete folders
-        folder(str) - the folder which will be deleted
-        outfolder(str) - folder where files will be sorted
-        """
-        if listdir(folder) == []:
-            rmdir(folder)
-            self.sort_files(self.basic_folder, outfolder)
+                        # Переміщуємо файл у відповідний каталог
+                        shutil.move(item, destination_directory / item.name)
+                        break
+                else:
+                    # Якщо розширення файлу не відповідає жодному типу, переміщуємо його у каталог 'unknown'
+                    destination_directory = Path(destination_path) / 'unknown'
+                    destination_directory.mkdir(exist_ok=True)
+                    shutil.move(item, destination_directory / item.name)
 
-    def create_folders(self, outfolder : str)->None:
-        """
-        The function creating folders for sorting
-        outfolder(str) - folder where files will be sorted
-        """
-        try:
-            mkdir(outfolder)
-            mkdir(f'{outfolder}/images')
-            mkdir(f'{outfolder}/documents')
-            mkdir(f'{outfolder}/audio')
-            mkdir(f'{outfolder}/video')
-            mkdir(f'{outfolder}/archives')
-            mkdir(f'{outfolder}/other')
-        except:
-            pass
+            elif item.is_dir():
+                # Якщо це каталог, перевіряємо, чи він має вміст
+                if any(item.iterdir()):
+                    # Рекурсивно викликаємо функцію для сортування файлів у внутрішньому каталозі
+                    sort_files_recursive(item, destination_path)
+                else:
+                    # Якщо каталог порожній, видаляємо його
+                    item.rmdir()
 
-    def normalize(self, name : str)->None:
-        """
-        The function converts cyrillic characters to latin and characters to _
-        name(str) - file name to convert
-        Examples:
-        файл_1 -> file_1
-        файл*_2 -> file__2
-        """
-        ret_name = str()
-        CYRILLIC_SYMBOLS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяєіїґ"
-        TRANSLATION = ("a", "b", "v", "g", "d", "e", "e", "j", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u",
-                "f", "h", "ts", "ch", "sh", "sch", "", "y", "", "e", "yu", "ya", "je", "i", "ji", "g")
-        TRANS = {}
 
-        for c, l in zip(CYRILLIC_SYMBOLS, TRANSLATION):
-            TRANS[ord(c)] = l
-            TRANS[ord(c.upper())] = l.upper()
+def delete_empty_folders_recursive(directory):
+    for item in directory.iterdir():
+        if item.is_dir():
+            # Якщо це каталог, рекурсивно викликаємо функцію для видалення порожніх каталогів
+            delete_empty_folders_recursive(item)
+            try:
+                # Видаляємо каталог, якщо він порожній
+                item.rmdir()
+            except OSError:
+                # Пропустити, якщо каталог не порожній
+                continue
 
-        for el in name.translate(TRANS):
-            if not el in TRANSLATION and not el in '0123456789':
-                ret_name += '_'
-            else:
-                ret_name += el
-        return ret_name
 
 def main():
     while True:
-        try:
-            print('1.Сортувати\n2.Вихід')
-            command = input("Введіть команду: ")
-            if command == '1':
-                inp_folder = input('Введіть папку для сортування')
-                out_fold = input("Введіть вихідну папку: ")
-                Sorter(inp_fold).sort_files(inp_fold, out_fold)
-                print(f"Файли були відсортовані тут: {out_folder}")
-                system('cls')
-            elif command == '2':
-                system('cls')
-                break
-        except:
-            print('Error')
-        
-main()
+        print("1. Сортувати каталог")
+        print("2. Вихід")
+        choice = input("Введіть значення для вибору ")
+        if choice == "1":
+            # Отримати шлях до вихідного каталогу від користувача
+            source_path = input('Введіть повний шлях до вашого каталогу ')
+            # Перевірка операційної системи
+            if platform.system() == "Windows":
+                if len(source_path.split(":")[0]) > 1:
+                    # Отримати поточний робочий каталог
+                    current_directory = Path.cwd()
+                    # Створити повний шлях
+                    source_path = current_directory / source_path
+
+            # Перевірка, чи існує шлях та чи є це каталог
+            source_directory = Path(source_path)
+            if source_directory.exists() and source_directory.is_dir():
+                print(f"Каталог '{source_path}' існує.")
+                # Створити каталоги для сортування файлів
+                for file_type in file_extensions.keys():
+                    destination_directory = source_directory / file_type
+                    destination_directory.mkdir(exist_ok=True)
+
+                sort_files_recursive(source_path, source_path)
+                delete_empty_folders_recursive(source_directory)
+                print("Сортування завершено!")
+
+            else:
+                print(f"Каталог '{source_path}' не існує або це не каталог.")
+        elif choice == "2":
+            os.system('cls')
+            break
+        else:
+            print('Некоректний вибір, спробуйте ще раз')
+            time.sleep(2)
+            os.system('cls')
+
+
+if __name__ == '__main__':
+    main()
