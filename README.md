@@ -73,3 +73,6 @@ Liudmyla Lisova (Scrum master) https://github.com/llisova
 Andrii Mashkov (Developer) https://github.com/Andrii-Mashkov
 Vlad Yerko (Developer) https://github.com/yerkovlad
 Kravchenko Oleksandr (Developer) https://github.com/San4ic
+=======
+# personal_assistant
+
