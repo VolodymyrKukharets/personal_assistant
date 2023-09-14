@@ -678,7 +678,7 @@ def main():
                     phones = ', '.join(contact.phones)
                     emails = ', '.join(contact.emails)
                     print(
-                        f"|{contact.name:^20}|{address:^30}|{phones:^30}| {emails:^30}| {birthday:^20}|")
+                        f"|{contact.name:^20}|{address:^30}|{phones:^30}| {emails:^30}| {contact.birthday:^20}|")
                 input('Введіть будь що для виходу')
                 os.system('cls')
             else:
@@ -752,7 +752,7 @@ def main():
                     phones = ', '.join(contact.phones)
                     emails = ', '.join(contact.emails)
                     print(
-                        f"|{contact.name:^20}|{address:^30}|{phones:^30}| {emails:^30}| {birthday:^20}|")
+                        f"|{contact.name:^20}|{address:^30}|{phones:^30}| {emails:^30}| {contact.birthday:^20}|")
                 input("Натисніть Ентер для виходу")
                 os.system('cls')
 
