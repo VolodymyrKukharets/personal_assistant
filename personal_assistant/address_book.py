@@ -753,10 +753,15 @@ def main():
         elif choice == '6':
             os.system('cls')
             filename = input("Введіть назву файлу для збереження: ")
-            address_book.save_to_file(filename)
-            print("Дані збережено")
-            time.sleep(2)
-            os.system('cls')
+            if filename != '':
+                address_book.save_to_file(filename)
+                print("Дані збережено")
+                time.sleep(2)
+                os.system('cls')
+            else:
+                print('Імя файлу не може бути пустим')
+                time.sleep(2)
+                os.system('cls')
 
         elif choice == '7':
             os.system('cls')

@@ -189,10 +189,15 @@ def main():
         elif command == '7':
             os.system('cls')
             filename = input("Введіть назву файлу для збереження: ")
-            notebook.save_to_file(filename)
-            print("Дані збережено")
-            time.sleep(2)
-            os.system('cls')
+            if filename != '':
+                notebook.save_to_file(filename)
+                print("Дані збережено")
+                time.sleep(2)
+                os.system('cls')
+            else:
+                print('Імя файлу не може бути пустим')
+                time.sleep(2)
+                os.system('cls')
 
         elif command == '8':
             os.system('cls')
