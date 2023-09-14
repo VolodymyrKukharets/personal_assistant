@@ -1,6 +1,6 @@
 import time
 import os
-from address_book import main as adress_book
+from address_book import main as address_book
 from notes import main as notes
 from sorter import main as sorter
 
@@ -15,7 +15,7 @@ def main():
 
         if command == "1":
             os.system('cls')
-            adress_book()
+            address_book()
 
         elif command == "2":
             os.system('cls')
