@@ -2,7 +2,6 @@ import time
 import os
 import pickle
 
-
 class NoteBook:
     def __init__(self):
         super().__init__()
@@ -89,15 +88,24 @@ class NoteBook:
             print("Не знайдено нотаток за вказаним ключовим словом.")
 
     def save_to_file(self, filename):
-        # Перевіряємо, чи існує каталог 'address_book_save'
-        if not os.path.exists('notes_save'):
-            os.makedirs('notes_save')  # Якщо не існує, створюємо його
+        # Отримуємо абсолютний шлях до кореневого каталогу пакету
+        package_root = os.path.abspath(os.path.dirname(__file__))
 
-        with open(f'notes_save/{filename}', 'wb') as file:
+        # Формуємо абсолютний шлях до каталогу 'notes_save'
+        save_directory = os.path.join(package_root, 'notes_save')
+
+        # Перевіряємо, чи існує каталог 'notes_save'
+        if not os.path.exists(save_directory):
+            os.makedirs(save_directory)  # Якщо не існує, створюємо його
+
+        with open(f'{save_directory}/{filename}', 'wb') as file:
             pickle.dump(self.notes, file)
 
     def load_from_file(self, filename):
-        with open(f'notes_save/{filename}', 'rb') as file:
+        package_root = os.path.abspath(os.path.dirname(__file__))
+        load_directory = os.path.join(package_root, 'notes_save')
+
+        with open(f'{load_directory}/{filename}', 'rb') as file:
             self.notes = pickle.load(file)
 
 
