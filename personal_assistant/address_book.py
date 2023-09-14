@@ -131,7 +131,7 @@ class AddressBook(UserDict):
     def __init__(self):
         super().__init__()
         self.data = {}
-        self.page_size = 3
+        self.page_size = 5
         self.page_number = 0
 
     def add_record(self, record):
@@ -157,15 +157,27 @@ class AddressBook(UserDict):
         return results
 
     def save_to_file(self, filename):
-        # Перевіряємо, чи існує каталог 'address_book_save'
-        if not os.path.exists('address_book_save'):
-            os.makedirs('address_book_save')  # Якщо не існує, створюємо його
+        # Отримуємо абсолютний шлях до кореневого каталогу пакету
+        package_root = os.path.abspath(os.path.dirname(__file__))
 
-        with open(f'address_book_save/{filename}', 'wb') as file:
+        # Формуємо абсолютний шлях до каталогу 'address_book_save'
+        save_directory = os.path.join(package_root, 'address_book_save')
+
+        # Перевіряємо, чи існує каталог 'address_book_save' та створюємо його, якщо він не існує
+        if not os.path.exists(save_directory):
+            os.makedirs(save_directory)
+
+        # Створюємо абсолютний шлях до файлу, який будемо зберігати
+        file_path = os.path.join(save_directory, filename)
+
+        with open(file_path, 'wb') as file:
             pickle.dump(self.data, file)
 
     def load_from_file(self, filename):
-        with open(f'address_book_save/{filename}', 'rb') as file:
+        package_root = os.path.abspath(os.path.dirname(__file__))
+        load_directory = os.path.join(package_root, 'address_book_save')
+
+        with open(f'{load_directory}/{filename}', 'rb') as file:
             self.data = pickle.load(file)
 
     def __iter__(self):
