@@ -1,8 +1,8 @@
 import time
 import os
-from address_book import main as address_book
-from notes import main as notes
-from sorter import main as sorter
+from personal_assistant.address_book import main as address_book
+from personal_assistant.notes import main as notes
+from personal_assistant.sorter import main as sorter
 
 def main():
     while True:
