@@ -34,4 +34,5 @@ def main():
         else:
             print("Некорректне значення, спробуйте ще раз")
 
-main()
+if __name__ == "__main__":
+    main()
